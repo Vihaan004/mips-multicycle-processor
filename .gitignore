@@ -1,0 +1,5 @@
+mips_multicycle.cache/
+mips_multicycle.hw/
+mips_multicycle.ip_user_files/
+mips_multicycle.sim/
+mips_multicycle.xpr
