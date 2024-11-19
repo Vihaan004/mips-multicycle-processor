@@ -84,35 +84,22 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-module Complete_MIPS(CLK, RST, HALT, A_Out, D_Out, LED);
+module Complete_MIPS(CLK, RST, A_Out, D_Out);
   // Will need to be modified to add functionality like adding the HALT operation and exposing $1.
   // THIS IS YOUR TOP MODULE for implementation. YOU DEFINE WHAT SIGNALS YOU NEED TO INPUT AND OUTPUT
     input CLK;
     input RST;
-    input HALT;
     output [6:0] A_Out;
     output [31:0] D_Out;
-    output [7:0] LED;
-
-    // wire slowCLK;
-
-    // complexDivider(CLK, slowCLK, ~RST);
-    
     
     wire CS, WE;
     wire [6:0] ADDR;
     wire [31:0] Mem_Bus;
-    wire [7:0] Reg1;
 	
 	assign A_Out = ADDR;
     assign D_Out = Mem_Bus;
-
-    // assign LED = D_Out[7:0];
-    assign LED = Reg1[7:0];
-
-    // change too slowCLK for synthesis
     
-    MIPS CPU(CLK, RST, HALT, CS, WE, ADDR, Mem_Bus, Reg1);
+    MIPS CPU(CLK, RST, CS, WE, ADDR, Mem_Bus);
     Memory MEM(CS, WE, CLK, ADDR, Mem_Bus);
 
 endmodule
@@ -137,9 +124,7 @@ module Memory(CS, WE, CLK, ADDR, Mem_Bus);
     initial
     begin
     /* Write your readmemh code here */
-    // $readmemh("C:\\Users\\VIHAAN\\Vivado\\mips_multicycle\\instructions.txt", RAM);
-    
-    $readmemh("C:\\Users\\VIHAAN\\Vivado\\mips_multicycle\\led_instructions.txt", RAM);
+    $readmemh("C:\\Users\\VIHAAN\\Vivado\\mips_multicycle\\instructions.txt", RAM);
     end
     
     assign Mem_Bus = ((CS == 1'b0) || (WE == 1'b1)) ? 32'bZ : data_out;
@@ -202,12 +187,11 @@ endmodule
 `define f_code instr[5:0]
 `define numshift instr[10:6]
 
-module MIPS (CLK, RST, HALT, CS, WE, ADDR, Mem_Bus, Reg1);
-    input CLK, RST, HALT;
+module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus);
+    input CLK, RST;
     output reg CS, WE;
     output [6:0] ADDR;
     inout [31:0] Mem_Bus;
-    output [7:0] Reg1;
     
     //special instructions (opcode == 000000), values of F code (bits 5-0):
     parameter add = 6'b100000;
@@ -248,9 +232,6 @@ module MIPS (CLK, RST, HALT, CS, WE, ADDR, Mem_Bus, Reg1);
     reg fetchDorI;
     wire [4:0] dr;
     reg [2:0] state, nstate;
-
-    // Assign Reg1_Output to value of $1 from the register file
-    assign Reg1 = readreg1;
     
     //combinational
     assign imm_ext = (instr[15] == 1)? {16'hFFFF, instr[15:0]} : {16'h0000, instr[15:0]};//Sign extend immediate field
@@ -373,9 +354,8 @@ module MIPS (CLK, RST, HALT, CS, WE, ADDR, Mem_Bus, Reg1);
         begin
             state <= 3'd0;
             pc <= 7'd0;
-        end 
-
-        else if (!HALT)
+        end
+        else 
         begin
             state <= nstate;
             pc <= npc;
