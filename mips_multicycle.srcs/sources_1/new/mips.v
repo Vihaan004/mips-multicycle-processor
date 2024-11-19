@@ -14,7 +14,7 @@ module MIPS_Testbench ();
     wire [6:0] Address;
     
     integer i;
-    parameter N = 11;
+    parameter N = 12;
     reg[31:0] expected[N:1];
     
     initial
@@ -42,7 +42,8 @@ module MIPS_Testbench ();
         expected[8] = 32'h00000120; // $8 content=288 decimal
         expected[9] = 32'h00000003; // $9 content=3
         expected[10] = 32'h00412022; // $10 content=5th instr
-        expected[11] = 32'h00000013; // $11 content=18
+        expected[11] = 32'h00000090; // $11 content=144 decimal
+        expected[12] = 32'h00014400; // $12 content= 82944 decimal
         CLK = 0;
     end
     
@@ -71,7 +72,6 @@ module MIPS_Testbench ();
                 $display("Output mismatch: got %d, expect %d", Mem_Bus, expected[i]);
             end
         end
-        
         $display("TEST COMPLETE");
         $stop;
     end
@@ -411,7 +411,7 @@ module ALU(clk, rst, op, instr, alu_in_A, alu_in_B, alu_result);
             else if (op == sll)  alu_result <= alu_in_B << `numshift;
             else if (op == slt)  alu_result <= (alu_in_A < alu_in_B)? 32'd1 : 32'd0;                    
             else if (op == xor1) alu_result <= alu_in_A ^ alu_in_B;	
-            else if (op == mult16) alu_result <= alu_in_A * alu_in_B;
+            else if (op == mult16) alu_result <= (alu_in_A[15:0] * alu_in_B[15:0]);
             else alu_result <= 0;
         end
     end
