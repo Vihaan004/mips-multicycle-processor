@@ -1,15 +1,14 @@
-`timescale 1ns/1ns
-
+`timescale 1ns / 1ps
 module MIPS_Testbench ();
     reg CLK;
     reg RST;
-//    wire CS;
-//    wire WE;
+    wire CS;
+    wire WE;
     wire [31:0] Mem_Bus;
     wire [6:0] Address;
     
     integer i;
-    parameter N = 10;
+    parameter N = 12;
     reg[31:0] expected[N:1];
     
     initial
@@ -19,7 +18,7 @@ module MIPS_Testbench ();
     
 	//This will need to change when you add more ports to the processor.
     Complete_MIPS uProc_Inst(CLK, RST, Address, Mem_Bus); 
-    // Complete_MIPS uProc_Inst(CLK, RST); 
+    
     always
     begin
         #5 CLK = !CLK;
@@ -37,6 +36,8 @@ module MIPS_Testbench ();
         expected[8] = 32'h00000120; // $8 content=288 decimal
         expected[9] = 32'h00000003; // $9 content=3
         expected[10] = 32'h00412022; // $10 content=5th instr
+        expected[11] = 32'h00000090; // $11 content=144 decimal
+        expected[12] = 32'h00014400; // $12 content= 82944 decimal
         CLK = 0;
     end
     
@@ -47,7 +48,7 @@ module MIPS_Testbench ();
     
         //Notice that the memory is initialized in the in the memory module not here (scroll down)    
         @(posedge CLK);
-        // @(posedge CLK);
+        @(posedge CLK);
         // driving reset low here puts processor in normal operating mode
         
 		RST = 1'b0;
@@ -65,7 +66,6 @@ module MIPS_Testbench ();
                 $display("Output mismatch: got %d, expect %d", Mem_Bus, expected[i]);
             end
         end
-        
         $display("TEST COMPLETE");
         $stop;
     end
