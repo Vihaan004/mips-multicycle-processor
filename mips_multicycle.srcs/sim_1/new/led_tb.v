@@ -5,10 +5,11 @@ module LED_Testbench ();
     reg HALT;
     // wire CS;
     // wire WE;
-    wire [31:0] Mem_Bus;
-    wire [6:0] Address;
+//    wire [31:0] Mem_Bus;
+//    wire [6:0] Address;
 
     wire [7:0] LED;
+    wire [31: 0] Reg1;
     
     // integer i;
     // parameter N = 12;
@@ -24,7 +25,7 @@ module LED_Testbench ();
     end
     
 	//This will need to change when you add more ports to the processor.
-    Complete_MIPS uProc_Inst(CLK, RST, HALT, Address, Mem_Bus, LED); 
+    Complete_MIPS uProc_Inst(CLK, RST, HALT, LED); 
     
     
     // initial begin
@@ -56,9 +57,27 @@ module LED_Testbench ();
         
 		RST = 1'b0;
         HALT = 0;
+        
+        #500;
+        
+        HALT = 1;
+        
+        #500;
+        
+        HALT = 0;
+        
+        #200;
+        
+        HALT = 1;
+        
+        #200;
+        
+        HALT = 0;
     
         /* add your testing code here */
-        #2000;
+        #6000;
+        
+        $stop;
 
 
 
@@ -75,7 +94,7 @@ module LED_Testbench ();
         //     end
         // end
         // $display("TEST COMPLETE");
-        $stop;
+//        $stop;
     end
     
 endmodule

@@ -84,31 +84,31 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-module Complete_MIPS(CLK, RST, HALT, A_Out, D_Out, LED);
+module Complete_MIPS(CLK, RST, HALT, LED);
   // Will need to be modified to add functionality like adding the HALT operation and exposing $1.
   // THIS IS YOUR TOP MODULE for implementation. YOU DEFINE WHAT SIGNALS YOU NEED TO INPUT AND OUTPUT
     input CLK;
     input RST;
     input HALT;
-    output [6:0] A_Out;
-    output [31:0] D_Out;
+//    output [6:0] A_Out;
+//    output [31:0] D_Out;
     output [7:0] LED;
 
     // wire slowCLK;
 
-    // complexDivider(CLK, slowCLK, ~RST);
+//    complexDivider divider(CLK, slowCLK, ~RST);
     
     
     wire CS, WE;
     wire [6:0] ADDR;
     wire [31:0] Mem_Bus;
-    wire [7:0] Reg1;
+    wire [31:0] Reg1;
 	
-	assign A_Out = ADDR;
-    assign D_Out = Mem_Bus;
+//	assign A_Out = ADDR;
+//    assign D_Out = Mem_Bus;
 
     // assign LED = D_Out[7:0];
-    assign LED = Reg1[7:0];
+    assign LED = Reg1[8:1];
 
     // change too slowCLK for synthesis
     
@@ -202,12 +202,12 @@ endmodule
 `define f_code instr[5:0]
 `define numshift instr[10:6]
 
-module MIPS (CLK, RST, HALT, CS, WE, ADDR, Mem_Bus, Reg1);
+module MIPS (CLK, RST, HALT, CS, WE, ADDR, Mem_Bus, readreg1);
     input CLK, RST, HALT;
     output reg CS, WE;
     output [6:0] ADDR;
     inout [31:0] Mem_Bus;
-    output [7:0] Reg1;
+    output [31:0] readreg1;
     
     //special instructions (opcode == 000000), values of F code (bits 5-0):
     parameter add = 6'b100000;
@@ -242,15 +242,13 @@ module MIPS (CLK, RST, HALT, CS, WE, ADDR, Mem_Bus, Reg1);
     wire [1:0] format;
     reg [31:0] instr;
     reg [6:0] pc, npc;
-    wire [31:0] imm_ext, alu_in_A, alu_in_B, reg_in, readreg1, readreg2;
+    wire [31:0] imm_ext, alu_in_A, alu_in_B, reg_in, readreg2;
     wire [31:0] alu_result_save;
     reg alu_or_mem, alu_or_mem_save, regw, writing, reg_or_imm, reg_or_imm_save;
     reg fetchDorI;
     wire [4:0] dr;
     reg [2:0] state, nstate;
-
-    // Assign Reg1_Output to value of $1 from the register file
-    assign Reg1 = readreg1;
+    // assign Reg1 = readreg1;
     
     //combinational
     assign imm_ext = (instr[15] == 1)? {16'hFFFF, instr[15:0]} : {16'h0000, instr[15:0]};//Sign extend immediate field
